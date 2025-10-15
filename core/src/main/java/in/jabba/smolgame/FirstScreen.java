@@ -42,9 +42,9 @@ public class FirstScreen implements Screen {
 
         collisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
 
-        playerTexture=new Texture("player.png");
+        playerTexture=new Texture("player2.png");
         batch= new SpriteBatch();
-        playerFrame = new TextureRegion(playerTexture, 0, 0, 16, 16);
+        playerFrame = new TextureRegion(playerTexture, 0, 0, 32, 64);
         playerPosition = new Vector2(300, 220);
 
         camera = new OrthographicCamera();
@@ -104,7 +104,7 @@ public class FirstScreen implements Screen {
         //batchrender
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(playerFrame, playerPosition.x, playerPosition.y,32,32); 
+        batch.draw(playerFrame, playerPosition.x, playerPosition.y); 
         batch.end();
     }
 
