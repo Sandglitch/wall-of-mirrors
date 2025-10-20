@@ -52,27 +52,53 @@ public class FirstScreen implements Screen {
     }
 
      private void handleInput(float delta) {
-        float oldX = playerPosition.x;
+float oldX = playerPosition.x;
         float oldY = playerPosition.y;
+        float playerWidth = playerFrame.getRegionWidth();
+        float playerHeight = playerFrame.getRegionHeight();
 
+        // --- Horizontal Movement ---
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             playerPosition.x -= playerSpeed * delta;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             playerPosition.x += playerSpeed * delta;
         }
-        if (isCellBlocked(playerPosition.x, playerPosition.y) || isCellBlocked(playerPosition.x, playerPosition.y + playerFrame.getRegionHeight() - 1)) {
-            playerPosition.x = oldX;
+
+        // --- Horizontal Collision Check ---
+        // Calculate the potential bottom-left X coordinate for collision checking
+        float checkX = playerPosition.x - playerWidth / 2f; 
+        float checkY = oldY - playerHeight / 2f; // Use OLD Y for horizontal check
+
+        // Check corners relative to the bottom-left coordinate
+        if (isCellBlocked(checkX, checkY) ||                         // Bottom-left
+            isCellBlocked(checkX + playerWidth - 1, checkY) ||        // Bottom-right
+            isCellBlocked(checkX, checkY + playerHeight - 1) ||       // Top-left
+            isCellBlocked(checkX + playerWidth - 1, checkY + playerHeight - 1) // Top-right
+           ) {
+            playerPosition.x = oldX; // Revert X if blocked
         }
 
+        // --- Vertical Movement ---
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             playerPosition.y += playerSpeed * delta;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             playerPosition.y -= playerSpeed * delta;
         }
-        if (isCellBlocked(playerPosition.x, playerPosition.y) || isCellBlocked(playerPosition.x + playerFrame.getRegionWidth() - 1, playerPosition.y)) {
-            playerPosition.y = oldY;
+
+        // --- Vertical Collision Check ---
+        // Calculate the final bottom-left coordinates for collision checking
+        checkX = playerPosition.x - playerWidth / 2f; // Use FINAL X
+        checkY = playerPosition.y - playerHeight / 2f; // Use potential NEW Y
+
+        // Check corners relative to the bottom-left coordinate
+        if (isCellBlocked(checkX, checkY) ||                         // Bottom-left
+            isCellBlocked(checkX + playerWidth - 1, checkY) ||        // Bottom-right
+            isCellBlocked(checkX, checkY + playerHeight - 1) ||       // Top-left
+            isCellBlocked(checkX + playerWidth - 1, checkY + playerHeight - 1) // Top-right
+           ) {
+            playerPosition.y = oldY; // Revert Y if blocked
         }
     }
 
@@ -104,7 +130,9 @@ public class FirstScreen implements Screen {
         //batchrender
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(playerFrame, playerPosition.x, playerPosition.y); 
+        batch.draw(playerFrame, 
+                   playerPosition.x - playerFrame.getRegionWidth() / 2f, 
+                   playerPosition.y - playerFrame.getRegionHeight() / 2f); 
         batch.end();
     }
 
